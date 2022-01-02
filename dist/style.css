@@ -1,0 +1,65 @@
+/*!************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/scss/app.scss ***!
+  \************************************************************************************************************/
+:root {
+  --color-torso: #2AB29E;
+  --color-fur-dark: #F5832C;
+  --color-spot: #F9584C;
+  --color-snout: #544258;
+  --color-collar: #3EAB6C;
+  --duration: .7s;
+  --semi-duration: calc(var(--duration) / 2);
+  --easing: cubic-bezier(.5, 0, .5, 1);
+  --stagger: calc(-1 * var(--semi-duration) / 2);
+}
+
+[class=Perry] {
+  z-index: 1;
+  height: 300px;
+  width: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+[class=Perry] * {
+  position: absolute;
+  will-change: transform;
+}
+[class=Perry]:before {
+  content: "";
+  position: absolute;
+  bottom: 13.3333333333%;
+  left: 0;
+  width: 100%;
+  height: 3.3333333333%;
+  background-color: #D3D1D1;
+}
+
+.torso {
+  width: 56.6666666667%;
+  height: 33.3333333333%;
+  background-color: var(--color-torso);
+  box-shadow: 5 25 68 200/5 6 9 7;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #E3E3E3;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  position: relative;
+}
