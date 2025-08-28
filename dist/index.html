@@ -1,38 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Parry the Platypus</title>
+        <title>Perry the Platypus - CSS Animation</title>
+        <meta name="description" content="Интерактивная CSS-анимация персонажа Перри Утконоса из мультсериала 'Финес и Ферб'" />
         <link rel="stylesheet" href="./style.css" />
     </head>
     <body>
-        <div class="Perry">
-            <div class="torso"></div>
-            <div class="beak">
-                <div></div>
-                <div></div>
-                <div></div>
+        <!-- Основной контейнер персонажа Перри Утконоса -->
+        <main class="perry-platypus" role="main" aria-label="Perry the Platypus character">
+            
+            <!-- Тело утконоса -->
+            <div class="perry-platypus__body" aria-label="Тело"></div>
+            
+            <!-- Клюв состоит из трех частей для создания 3D эффекта -->
+            <div class="perry-platypus__beak" aria-label="Клюв">
+                <div class="perry-platypus__beak-part perry-platypus__beak-part--side" aria-hidden="true"></div>
+                <div class="perry-platypus__beak-part perry-platypus__beak-part--bottom" aria-hidden="true"></div>
+                <div class="perry-platypus__beak-part perry-platypus__beak-part--main" aria-hidden="true"></div>
             </div>
-            <div class="neb"></div>
-            <div class="eye"></div>
-            <div class="eye-left"></div>
-            <div class="hair">
-                <div></div>
-                <div></div>
-                <div></div>
+            
+            <!-- Ноздри -->
+            <div class="perry-platypus__nostrils" aria-label="Ноздри"></div>
+            
+            <!-- Правый глаз -->
+            <div class="perry-platypus__eye perry-platypus__eye--right" aria-label="Правый глаз"></div>
+            
+            <!-- Левый глаз -->
+            <div class="perry-platypus__eye perry-platypus__eye--left" aria-label="Левый глаз"></div>
+            
+            <!-- Волосы на голове (3 пряди) -->
+            <div class="perry-platypus__hair" aria-label="Волосы">
+                <div class="perry-platypus__hair-strand perry-platypus__hair-strand--1" aria-hidden="true"></div>
+                <div class="perry-platypus__hair-strand perry-platypus__hair-strand--2" aria-hidden="true"></div>
+                <div class="perry-platypus__hair-strand perry-platypus__hair-strand--3" aria-hidden="true"></div>
             </div>
-            <div class="leg"></div>
-            <div class="leg2"></div>
-            <div class="hz">
-                <div class="leg3"></div>
+            
+            <!-- Правая задняя лапа -->
+            <div class="perry-platypus__leg perry-platypus__leg--back-right" aria-label="Правая задняя лапа"></div>
+            
+            <!-- Левая задняя лапа -->
+            <div class="perry-platypus__leg perry-platypus__leg--back-left" aria-label="Левая задняя лапа"></div>
+            
+            <!-- Контейнер для правой передней лапы -->
+            <div class="perry-platypus__leg-container" aria-label="Контейнер передней лапы">
+                <div class="perry-platypus__leg perry-platypus__leg--front-right" aria-label="Правая передняя лапа"></div>
             </div>
-            <div class="tap">
-                <div></div>
-                <div></div>
-                <div></div>
+            
+            <!-- Хвост утконоса (состоит из нескольких частей) -->
+            <div class="perry-platypus__tail" aria-label="Хвост">
+                <div class="perry-platypus__tail-part perry-platypus__tail-part--1" aria-hidden="true"></div>
+                <div class="perry-platypus__tail-part perry-platypus__tail-part--2" aria-hidden="true"></div>
+                <div class="perry-platypus__tail-part perry-platypus__tail-part--3" aria-hidden="true"></div>
             </div>
-        </div>
+        </main>
         <script src="bundle.js"></script>
     </body>
 </html>
