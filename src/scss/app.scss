@@ -1,393 +1,137 @@
+@use "sass:math";
+@use "sass:meta";
+@use "sass:string";
+@use "sass:list";
+
+// ===================================================================
+// ПЕРЕМЕННЫЕ И КОНФИГУРАЦИЯ
+// ===================================================================
+
 :root {
-    --color-torso: #2ab29e;
-    --color-fur-dark: #f5832c;
-    --color-beak: #ed9c0d;
-    --color-snout: #544258;
-    --color-collar: #3eab6c;
+    // Цветовая палитра персонажа
+    --color-torso: #2ab29e;          // Основной цвет тела
+    --color-fur-dark: #f5832c;       // Темный мех
+    --color-beak: #ed9c0d;           // Цвет клюва
+    --color-snout: #544258;          // Цвет морды
+    --color-collar: #3eab6c;         // Цвет ошейника
+    --color-background: #e3e3e3;     // Фон страницы
+    --color-shadow: #d3d1d1;         // Тень под персонажем
+    
+    // Анимация
     --duration: 0.7s;
     --semi-duration: calc(var(--duration) / 2);
     --easing: cubic-bezier(0.5, 0, 0.5, 1);
     --stagger: calc(-1 * var(--semi-duration) / 2);
+    
+    // Размеры контейнера
+    --perry-width: 300px;
+    --perry-height: 300px;
 }
 
-*,
-*::before,
-*::after {
-}
+// ===================================================================
+// АНИМАЦИИ (KEYFRAMES)
+// ===================================================================
 
-[class="Perry"] {
-    z-index: 1;
-    height: 300px;
-    width: 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    * {
-        position: absolute;
-        will-change: transform;
+// Плавное покачивание тела (дыхание/плавание) с морфингом формы
+@keyframes body-float {
+    0% { 
+        transform: translateY(0px) scale(1); 
+        border-radius: 90% 70% 8% 30% / 10% 30% 100% 80%;
     }
-
-    &:before {
-        content: "";
-        position: absolute;
-        bottom: percentage(40px / 300px);
-        left: 0;
-        width: 100%;
-        height: percentage(10px / 300px);
-        background-color: #d3d1d1;
+    25% { 
+        transform: translateY(-2px) scale(1.008); 
+        border-radius: 93% 67% 5% 33% / 7% 33% 103% 77%;
     }
-}
-
-.torso {
-    width: percentage(200px / 300px);
-    height: percentage(80px / 300px);
-    background-color: var(--color-torso);
-    border-radius: 90% 70% 8% 30% / 10% 30% 100% 80%;
-
-    filter: drop-shadow(1px 0 0 black) drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black)
-        drop-shadow(0 -1px 0 black);
-
-    z-index: 4;
-}
-
-.beak {
-    width: 44px;
-    height: 44px;
-
-    left: 46px;
-    bottom: 108px;
-
-    filter: drop-shadow(1px 0 0 black) drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black)
-        drop-shadow(0 -1px 0 black);
-
-    transform: perspective(400px);
-
-    margin: 2px;
-
-    z-index: 5;
-
-    & > div:nth-child(1) {
-        width: 30%;
-        height: 100%;
-
-        background-color: var(--color-beak);
-        border-radius: 100% 100% 0% 200% / 40% 90% 10% 40%;
+    50% { 
+        transform: translateY(-4px) scale(1.015); 
+        border-radius: 95% 65% 3% 35% / 5% 35% 105% 75%;
     }
-
-    & > div:nth-child(2) {
-        width: 100%;
-        height: 30%;
-
-        bottom: 0;
-
-        background-color: var(--color-beak);
-        border-radius: 100% 100% 100% 100% / 100% 100% 100% 100%;
+    75% { 
+        transform: translateY(-2px) scale(1.008); 
+        border-radius: 93% 67% 5% 33% / 7% 33% 103% 77%;
     }
-
-    & > div:nth-child(3) {
-        width: 90%;
-        height: 70%;
-
-        top: 10%;
-        left: 10%;
-
-        border-radius: 100%;
-
-        background: radial-gradient(162% 140% at 100% 20%, transparent 50%, var(--color-beak) 51%);
+    100% { 
+        transform: translateY(0px) scale(1); 
+        border-radius: 90% 70% 8% 30% / 10% 30% 100% 80%;
     }
 }
 
-.neb {
-    width: 70px;
-    height: 14px;
+// ===================================================================
+// МИКСИНЫ
+// ===================================================================
 
-    left: -4px;
-    top: 172px;
-
-    background-color: red;
-    border-radius: 100% 100% 10% 50% / 100% 100% 0% 100%;
-
-    background: radial-gradient(162% 140% at 100% 140%, transparent 50%, var(--color-beak) 51%);
-
-    filter: drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black) drop-shadow(0 -1px 0 black);
-
-    z-index: 5;
-}
-
-.eye {
-    width: 38px;
-    height: 24px;
-
-    left: 62px;
-    top: 120px;
-
-    background-color: white;
-    border-radius: 100% 100% 80% 80% / 100% 100% 80% 80%;
-    box-shadow: 0 0 0 2px black;
-
-    &:after {
-        content: "";
-        position: absolute;
-        width: 16px;
-        height: 13px;
-
-        left: 18px;
-        top: 4px;
-
-        background-color: black;
-        border-radius: 100%;
-        background: radial-gradient(18% 16% at 60% 40%, white 50%, black 51%);
+// Миксин для создания черных контуров
+// 
+// Параметры:
+// $size - толщина контура (по умолчанию 1px)
+// $sides - строка с буквами сторон: 't'(top), 'r'(right), 'b'(bottom), 'l'(left)
+//
+// Примеры использования:
+// @include black-outline();              // Все стороны
+// @include black-outline(2px);           // Все стороны, толщина 2px
+// @include black-outline(1px, 'rbl');    // Без верхней стороны
+// @include black-outline(1px, 'rl');     // Только левая и правая стороны
+// @include black-outline(3px, 't');      // Только верхняя сторона
+@mixin black-outline($size: 1px, $sides: 'trbl') {
+    $filter-list: ();
+    
+    // Если передана строка с буквами сторон
+    @if meta.type-of($sides) == string {
+        @if string.index($sides, 'r') { 
+            $filter-list: list.append($filter-list, drop-shadow(#{$size} 0 0 black)); 
+        }
+        @if string.index($sides, 'l') { 
+            $filter-list: list.append($filter-list, drop-shadow(-#{$size} 0 0 black)); 
+        }
+        @if string.index($sides, 'b') { 
+            $filter-list: list.append($filter-list, drop-shadow(0 #{$size} 0 black)); 
+        }
+        @if string.index($sides, 't') { 
+            $filter-list: list.append($filter-list, drop-shadow(0 -#{$size} 0 black)); 
+        }
     }
-
-    z-index: 4;
-}
-
-.eye-left {
-    width: 40px;
-    height: 22px;
-
-    left: 30px;
-    top: 120px;
-
-    background-color: white;
-    border-radius: 100% 100% 100% 80% / 100% 100% 100% 80%;
-    box-shadow: 0 0 0 2px black;
-
-    z-index: 2;
-
-    &:after {
-        content: "";
-        position: absolute;
-        width: 12px;
-        height: 13px;
-
-        left: -2px;
-        top: 6px;
-
-        border-radius: 60% 150% 100% 100% / 60% 100% 100% 150%;
-        background: radial-gradient(18% 16% at 22% 40%, white 50%, black 51%);
-
-        transform: rotate(10deg);
+    
+    // Если список пуст, используем все стороны
+    @if list.length($filter-list) == 0 {
+        filter: drop-shadow(#{$size} 0 0 black) 
+                drop-shadow(-#{$size} 0 0 black) 
+                drop-shadow(0 #{$size} 0 black) 
+                drop-shadow(0 -#{$size} 0 black);
+    } @else {
+        filter: #{$filter-list};
     }
 }
 
-.hair {
-    width: 50px;
-    height: 30px;
-
-    left: 8px;
-    top: 86px;
-
-    & > div:nth-child(1) {
-        width: 60%;
-        height: 90%;
-
-        left: 14px;
-        top: 18px;
-
-        border-radius: 0% 180% 20% 0% / 0% 100% 100% 0%;
-
-        border-top: 2px solid black;
-        border-right: 2px solid black;
-    }
-
-    & > div:nth-child(2) {
-        width: 80%;
-        height: 200%;
-
-        left: 4px;
-        top: 4px;
-
-        border-radius: 0% 180% 20% 0% / 0% 100% 100% 0%;
-
-        border-top: 2px solid black;
-        border-right: 2px solid black;
-    }
-
-    & > div:nth-child(3) {
-        width: 20%;
-        height: 100%;
-
-        left: 32px;
-        top: 0px;
-
-        border-radius: 0% 220% 0% 0% / 0% 190% 0% 0%;
-
-        transform: rotate(-10deg);
-
-        border-top: 2px solid black;
-        border-right: 2px solid black;
-    }
+// Миксин для абсолютного позиционирования
+@mixin absolute-position($top: null, $right: null, $bottom: null, $left: null) {
+    position: absolute;
+    @if $top != null { top: $top; }
+    @if $right != null { right: $right; }
+    @if $bottom != null { bottom: $bottom; }
+    @if $left != null { left: $left; }
 }
 
-.leg {
-    width: 30px;
-    height: 45px;
-
-    left: 105px;
-    top: 175px;
-
-    background: radial-gradient(90% 140% at -18% 60%, transparent 50%, var(--color-torso) 51%);
-    transform: rotate(-5deg);
-    border-radius: 0% 0% 70% 0% / 0% 3% 100% 0%;
-
-    filter: drop-shadow(1px 0 0 black) drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black);
-
-    z-index: 4;
-
-    &:after {
-        content: "";
-        position: absolute;
-        width: 18px;
-        height: 10px;
-
-        left: -2px;
-        top: 37px;
-
-        background-color: var(--color-torso);
-        border-radius: 60% 0% 100% 100% / 60% 0% 100% 150%;
-
-        transform: rotate(-10deg);
-    }
+// Миксин для размеров элементов
+@mixin size($width, $height: $width) {
+    width: $width;
+    height: $height;
 }
 
-.leg2 {
-    width: 28px;
-    height: 10px;
-
-    left: 90px;
-    top: 188px;
-
-    background: radial-gradient(50% 140% at -10% 0%, transparent 50%, var(--color-torso) 51%);
-    transform: rotate(-5deg);
-    border-radius: 0% 0% 80% 0% / 0% 0% 100% 0%;
-
-    filter: drop-shadow(1px 0 0 black) drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black);
-
-    z-index: 2;
-
-    &:after {
-        content: "";
-        position: absolute;
-        width: 10px;
-        height: 14px;
-
-        left: -2px;
-        top: 6px;
-
-        background-color: var(--color-torso);
-        border-radius: 60% 0% 100% 100% / 60% 0% 100% 150%;
-
-        transform: rotate(-10deg);
-    }
+// Миксин для конвертации пикселей в проценты от контейнера
+@function to-percent($pixels, $container: var(--perry-width)) {
+    @return math.percentage(math.div($pixels, 300px));
 }
 
-.hz {
-	width: 32px;
-	height: 42px;
-
-	left: 195px;
-	top: 166px;
-
-	padding: 1px;
-
-	z-index: 4;
-	overflow: hidden;
-
-	transform: rotate(-10deg);
-
-	> .leg3 {
-		width: 45px;
-		height: 40px;
-	
-		background: radial-gradient(80% 40% at 95% 78%, transparent 51%, var(--color-torso) 50%);
-		//background: linear-gradient(90deg,var(--color-torso) 80%, transparent 50%);
-	
-		border-radius: 100% 0% 100% 100% / 100% 0% 200% 100%;
-	
-		filter: drop-shadow(1px 0 0 black) drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black);
-	}
-}
-
-.tap {
-    width: 18px;
-    height: 28px;
-
-    left: 210px;
-    top: 194px;
-
-    background-color: #544258;
-
-    background: radial-gradient(72% 70% at 0% 38%, transparent 50%, var(--color-beak) 51%);
-    transform: rotate(50deg);
-    border-radius: 100% 100% 0% 0% / 160% 180% 0% 0%;
-
-    filter: drop-shadow(1px 0 0 black) drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black) drop-shadow(0 -1px 0 black);
-
-    z-index: 4;
-
-    & > div:nth-child(1) {
-        content: "";
-        position: absolute;
-
-        width: 10px;
-        height: 10px;
-
-        left: 45%;
-        top: 90%;
-
-        transform: rotate(0deg);
-
-        background-color: var(--color-beak);
-        border-radius: 100% 100% 0% 250% / 40% 90% 10% 160%;
-    }
-
-    & > div:nth-child(2) {
-        content: "";
-        position: absolute;
-
-        width: 8px;
-        height: 12px;
-
-        left: 20%;
-        top: 100%;
-
-        transform: rotate(40deg);
-
-        background-color: var(--color-beak);
-        border-radius: 100% 100% 0% 250% / 40% 90% 10% 160%;
-    }
-
-    & > div:nth-child(3) {
-        content: "";
-        position: absolute;
-
-        width: 0; 
-        height: 0; 
-        border-left: 18px solid transparent;
-        border-right: 5px solid transparent;
-        border-bottom: 8px solid var(--color-beak);
-
-        left: -60%;
-        top: 110%;
-
-        transform: rotate(-64deg);
-
-        //background-color: var(--color-beak);
-        //border-radius: 100% 100% 0% 250% / 40% 90% 10% 160%;
-    }
-
-}
-
+// ===================================================================
+// БАЗОВЫЕ СТИЛИ
+// ===================================================================
 
 html,
 body {
-    width: 100%;
-    height: 100%;
+    @include size(100%);
     margin: 0;
     padding: 0;
-    background-color: #e3e3e3;
+    background-color: var(--color-background);
 }
 
 body {
@@ -401,4 +145,297 @@ body {
 *:after {
     box-sizing: border-box;
     position: relative;
+}
+
+// ===================================================================
+// ОСНОВНОЙ КОНТЕЙНЕР ПЕРСОНАЖА
+// ===================================================================
+
+.perry-platypus {
+    @include size(var(--perry-width), var(--perry-height));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+
+    * {
+        position: absolute;
+        will-change: transform;
+    }
+
+    // Тень под персонажем
+    &:before {
+        content: "";
+        @include absolute-position($bottom: to-percent(40px), $left: 0);
+        @include size(100%, to-percent(10px));
+        background-color: var(--color-shadow);
+    }
+}
+
+// ===================================================================
+// КОМПОНЕНТЫ ТЕЛА
+// ===================================================================
+
+// Основное тело утконоса
+.perry-platypus__body {
+    @include size(to-percent(200px), to-percent(80px));
+    @include black-outline();
+    background-color: var(--color-torso);
+    z-index: 4;
+    
+    // Добавляем плавное покачивание с трансформацией формы (дыхание/плавание)
+    animation: body-float 6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+// ===================================================================
+// КОМПОНЕНТЫ ГОЛОВЫ
+// ===================================================================
+
+// Клюв (составной элемент)
+.perry-platypus__beak {
+    @include size(44px);
+    @include absolute-position($left: 46px, $bottom: 108px);
+    @include black-outline();
+    transform: perspective(400px);
+    margin: 2px;
+    z-index: 5;
+}
+
+// Части клюва
+.perry-platypus__beak-part {
+    
+    // Боковая часть клюва
+    &--side {
+        @include size(30%, 100%);
+        background-color: var(--color-beak);
+        border-radius: 100% 100% 0% 200% / 40% 90% 10% 40%;
+    }
+
+    // Нижняя часть клюва
+    &--bottom {
+        @include size(100%, 30%);
+        @include absolute-position($bottom: 0);
+        background-color: var(--color-beak);
+        border-radius: 100%;
+    }
+
+    // Основная часть клюва
+    &--main {
+        @include size(90%, 70%);
+        @include absolute-position($top: 10%, $left: 10%);
+        border-radius: 100%;
+        background: radial-gradient(162% 140% at 100% 20%, transparent 50%, var(--color-beak) 51%);
+    }
+}
+
+// Ноздри
+.perry-platypus__nostrils {
+    @include size(70px, 14px);
+    @include absolute-position($left: -4px, $top: 172px);
+    border-radius: 100% 100% 10% 50% / 100% 100% 0% 100%;
+    background: radial-gradient(162% 140% at 100% 140%, transparent 50%, var(--color-beak) 51%);
+    @include black-outline(1px, 'lbt');
+    z-index: 5;
+}
+
+// ===================================================================
+// ГЛАЗА
+// ===================================================================
+
+// Базовые стили для глаз
+.perry-platypus__eye {
+    background-color: white;
+    box-shadow: 0 0 0 2px black;
+
+    // Зрачок (общий стиль)
+    &:after {
+        content: "";
+        border-radius: 100%;
+    }
+
+    // Правый глаз
+    &--right {
+        @include size(38px, 24px);
+        @include absolute-position($left: 62px, $top: 120px);
+        border-radius: 100% 100% 80% 80% / 100% 100% 80% 80%;
+        z-index: 4;
+
+        // Зрачок правого глаза
+        &:after {
+            @include absolute-position($left: 18px, $top: 4px);
+            @include size(16px, 13px);
+            background: radial-gradient(18% 16% at 60% 40%, white 50%, black 51%);
+        }
+    }
+
+    // Левый глаз
+    &--left {
+        @include size(40px, 22px);
+        @include absolute-position($left: 30px, $top: 120px);
+        border-radius: 100% 100% 100% 80% / 100% 100% 100% 80%;
+        z-index: 2;
+
+        // Зрачок левого глаза
+        &:after {
+            @include absolute-position($left: -2px, $top: 6px);
+            @include size(12px, 13px);
+            border-radius: 60% 150% 100% 100% / 60% 100% 100% 150%;
+            background: radial-gradient(18% 16% at 22% 40%, white 50%, black 51%);
+            transform: rotate(10deg);
+        }
+    }
+}
+
+// ===================================================================
+// ВОЛОСЫ
+// ===================================================================
+
+.perry-platypus__hair {
+    @include size(50px, 30px);
+    @include absolute-position($left: 8px, $top: 86px);
+}
+
+// Пряди волос
+.perry-platypus__hair-strand {
+    border-top: 2px solid black;
+    border-right: 2px solid black;
+
+    // Прядь волос 1
+    &--1 {
+        @include size(60%, 90%);
+        @include absolute-position($left: 14px, $top: 18px);
+        border-radius: 0% 180% 20% 0% / 0% 100% 100% 0%;
+    }
+
+    // Прядь волос 2
+    &--2 {
+        @include size(80%, 200%);
+        @include absolute-position($left: 4px, $top: 4px);
+        border-radius: 0% 180% 20% 0% / 0% 100% 100% 0%;
+    }
+
+    // Прядь волос 3
+    &--3 {
+        @include size(20%, 100%);
+        @include absolute-position($left: 32px, $top: 0px);
+        border-radius: 0% 220% 0% 0% / 0% 190% 0% 0%;
+        transform: rotate(-10deg);
+    }
+}
+
+// ===================================================================
+// КОНЕЧНОСТИ
+// ===================================================================
+
+// Базовые стили для лап
+.perry-platypus__leg {
+    background-color: var(--color-torso);
+    @include black-outline();
+
+    // Стопа (общий стиль)
+    &:after {
+        content: "";
+        background-color: var(--color-torso);
+        border-radius: 60% 0% 100% 100% / 60% 0% 100% 150%;
+    }
+
+    // Ближняя передняя лапа
+    &--back-right {
+        @include size(30px, 45px);
+        @include absolute-position($left: 105px, $top: 175px);
+        background: radial-gradient(90% 140% at -18% 60%, transparent 50%, var(--color-torso) 51%);
+        transform: rotate(-5deg);
+        border-radius: 0% 0% 70% 0% / 0% 3% 100% 0%;
+        z-index: 4;
+        @include black-outline(1px, 'rlb');
+
+
+        // Стопа
+        &:after {
+            @include absolute-position($left: -2px, $top: 37px);
+            @include size(18px, 10px);
+            transform: rotate(-10deg);
+        }
+    }
+
+    // Дальняя передняя лапа
+    &--back-left {
+        @include size(28px, 10px);
+        @include absolute-position($left: 90px, $top: 188px);
+        background: radial-gradient(50% 140% at -10% 0%, transparent 50%, var(--color-torso) 51%);
+        transform: rotate(-5deg);
+        border-radius: 0% 0% 80% 0% / 0% 0% 100% 0%;
+        z-index: 2;
+
+        // Стопа
+        &:after {
+            @include absolute-position($left: -2px, $top: 6px);
+            @include size(10px, 14px);
+            transform: rotate(-10deg);
+        }
+    }
+
+    // Правая передняя лапа
+    &--front-right {
+        @include size(45px, 40px);
+        background: radial-gradient(80% 40% at 95% 78%, transparent 51%, var(--color-torso) 50%);
+        border-radius: 100% 0% 100% 100% / 100% 0% 200% 100%;
+    }
+}
+
+// Контейнер для правой передней лапы
+.perry-platypus__leg-container {
+    @include size(32px, 42px);
+    @include absolute-position($left: 195px, $top: 166px);
+    padding: 1px;
+    z-index: 4;
+    overflow: hidden;
+    transform: rotate(-10deg);
+}
+
+// ===================================================================
+// ХВОСТ
+// ===================================================================
+
+.perry-platypus__tail {
+    @include size(18px, 28px);
+    @include absolute-position($left: 210px, $top: 194px);
+    background: radial-gradient(72% 70% at 0% 38%, transparent 50%, var(--color-beak) 51%);
+    transform: rotate(50deg);
+    border-radius: 100% 100% 0% 0% / 160% 180% 0% 0%;
+    @include black-outline();
+    z-index: 4;
+}
+
+// Части хвоста
+.perry-platypus__tail-part {
+    content: "";
+
+    // Часть хвоста 1
+    &--1 {
+        @include absolute-position($left: 45%, $top: 90%);
+        @include size(10px);
+        background-color: var(--color-beak);
+        border-radius: 100% 100% 0% 250% / 40% 90% 10% 160%;
+        transform: rotate(0deg);
+    }
+
+    // Часть хвоста 2
+    &--2 {
+        @include absolute-position($left: 20%, $top: 100%);
+        @include size(8px, 12px);
+        background-color: var(--color-beak);
+        border-radius: 100% 100% 0% 250% / 40% 90% 10% 160%;
+        transform: rotate(40deg);
+    }
+
+    // Часть хвоста 3
+    &--3 {
+        @include absolute-position($left: -60%, $top: 110%);
+        @include size(0);
+        border-left: 18px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 8px solid var(--color-beak);
+        transform: rotate(-64deg);
+    }
 }
